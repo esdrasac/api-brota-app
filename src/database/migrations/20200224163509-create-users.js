@@ -10,7 +10,6 @@ module.exports = {
     name: {
       type: Sequelize.STRING,
       allowNull: false,
-      unique: true,
     },
     email: {
       type: Sequelize.STRING,
@@ -23,12 +22,10 @@ module.exports = {
     },
     male_interest: {
       type: Sequelize.BOOLEAN,
-      allowNull: false,
       defaultValue: false,
     },
     female_interest: {
       type: Sequelize.BOOLEAN,
-      allowNull: false,
       defaultValue: false,
     },
     birthday: {
