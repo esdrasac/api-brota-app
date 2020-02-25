@@ -4,6 +4,21 @@ const UserSchema = new mongoose.Schema({
   id: {
     type: Number,
   },
+  name: {
+    type: String,
+  },
+  bio: {
+    type: String,
+  },
+  sex: {
+    type: String,
+  },
+  male_interest: {
+    type: Boolean,
+  },
+  female_interest: {
+    type: Boolean,
+  },
   email: {
     type: String,
   },

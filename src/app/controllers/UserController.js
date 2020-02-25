@@ -6,16 +6,39 @@ const UserSchema = require('../schemas/UserSchema');
 class UserController {
   async index(req, res) {
     const loggedMongo = await UserSchema.findOne({ id: req.userId });
+    let usersMongo;
+    if (loggedMongo.male_interest === true && loggedMongo.female_interest === true) {
+      usersMongo = await UserSchema.find({
+        $and: [
+          { _id: { $ne: loggedMongo._id } },
+          { _id: { $nin: loggedMongo.likes } },
+          { _id: { $nin: loggedMongo.dislikes } },
+        ],
+      });
+    }
+    if (loggedMongo.male_interest === true) {
+      usersMongo = await UserSchema.find({
+        $and: [
+          { _id: { $ne: loggedMongo._id } },
+          { _id: { $nin: loggedMongo.likes } },
+          { _id: { $nin: loggedMongo.dislikes } },
+          { sex: 'M' },
+        ],
+      });
+    }
+    if (loggedMongo.female_interest === true) {
+      usersMongo = await UserSchema.find({
+        $and: [
+          { _id: { $ne: loggedMongo._id } },
+          { _id: { $nin: loggedMongo.likes } },
+          { _id: { $nin: loggedMongo.dislikes } },
+          { sex: 'F' },
+        ],
+      });
+    }
 
-    const usersMongo = await UserSchema.find({
-      $and: [
-        { _id: { $ne: loggedMongo._id } },
-        { _id: { $nin: loggedMongo.likes } },
-        { _id: { $nin: loggedMongo.dislikes } },
-      ],
-    });
 
-    res.send(usersMongo);
+    res.json(usersMongo);
   }
 
   async store(req, res) {
@@ -58,6 +81,7 @@ class UserController {
 
     await UserSchema.create({
       id,
+      name,
       email,
     });
 
@@ -96,6 +120,7 @@ class UserController {
     }
 
     const user = await User.findByPk(req.userId);
+    const userMongo = await UserSchema.findOne({ id: req.userId });
 
     const { oldPassword } = req.body;
 
@@ -103,7 +128,27 @@ class UserController {
       return res.status(401).json({ error: 'Password not match' });
     }
 
+    if (req.body.name) {
+      userMongo.name = req.body.name;
+    }
+    if (req.body.sex) {
+      userMongo.sex = req.body.sex;
+    }
+    if (req.body.male_interest) {
+      userMongo.male_interest = req.body.male_interest;
+    }
+    if (req.body.female_interest) {
+      userMongo.female_interest = req.body.female_interest;
+    }
+    if (req.body.bio) {
+      userMongo.bio = req.body.bio;
+    }
+
+    console.log(userMongo);
+    await userMongo.save();
+
     const { id, name, email } = await user.update(req.body);
+
 
     return res.json({
       id,
