@@ -1,8 +1,23 @@
 const yup = require('yup');
 
 const User = require('../models/User');
+const UserSchema = require('../schemas/UserSchema');
 
 class UserController {
+  async index(req, res) {
+    const loggedMongo = await UserSchema.findOne({ id: req.userId });
+
+    const usersMongo = await UserSchema.find({
+      $and: [
+        { _id: { $ne: loggedMongo._id } },
+        { _id: { $nin: loggedMongo.likes } },
+        { _id: { $nin: loggedMongo.dislikes } },
+      ],
+    });
+
+    res.send(usersMongo);
+  }
+
   async store(req, res) {
     const schema = yup.object().shape({
       name: yup.string()
@@ -40,6 +55,11 @@ class UserController {
     }
 
     const { id, name, email } = await User.create(req.body);
+
+    await UserSchema.create({
+      id,
+      email,
+    });
 
     return res.json({
       id,
