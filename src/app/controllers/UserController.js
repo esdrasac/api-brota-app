@@ -2,12 +2,13 @@ const yup = require('yup');
 
 const User = require('../models/User');
 const UserSchema = require('../schemas/UserSchema');
+const validate = require('../services/Validations.service');
 
 class UserController {
   async index(req, res) {
-    const loggedMongo = await UserSchema.findOne({ id: req.userId });
+    const loggedMongo = await UserSchema.finddOne({ id: req.userId });
     let usersMongo;
-    if (loggedMongo.male_interest === true && loggedMongo.female_interest === true) {
+    if (loggedMongo.male_interest && loggedMongo.female_interest) {
       usersMongo = await UserSchema.find({
         $and: [
           { _id: { $ne: loggedMongo._id } },
@@ -15,8 +16,11 @@ class UserController {
           { _id: { $nin: loggedMongo.dislikes } },
         ],
       });
+
+      return res.json(usersMongo);
     }
-    if (loggedMongo.male_interest === true) {
+
+    if (loggedMongo.male_interest && !loggedMongo.female_interest) {
       usersMongo = await UserSchema.find({
         $and: [
           { _id: { $ne: loggedMongo._id } },
@@ -25,8 +29,10 @@ class UserController {
           { sex: 'M' },
         ],
       });
+      return res.json(usersMongo);
     }
-    if (loggedMongo.female_interest === true) {
+
+    if (loggedMongo.female_interest && !loggedMongo.male_interest) {
       usersMongo = await UserSchema.find({
         $and: [
           { _id: { $ne: loggedMongo._id } },
@@ -38,7 +44,7 @@ class UserController {
     }
 
 
-    res.json(usersMongo);
+    return res.json(usersMongo);
   }
 
   async store(req, res) {
@@ -59,6 +65,10 @@ class UserController {
 
     if (!(await schema.isValid(req.body))) {
       return res.status(400).json({ error: 'Validation Fails' });
+    }
+
+    if (validate.checkEmail(req.body.email) <= 4) {
+      return res.status(401).json({ error: 'Access is available only for PUC studants' });
     }
 
     const { male_interest, female_interest } = req.body;
