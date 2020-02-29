@@ -1,12 +1,13 @@
 const yup = require('yup');
 
 const User = require('../models/User');
+const File = require('../models/File');
 const UserSchema = require('../schemas/UserSchema');
 const validate = require('../services/Validations.service');
 
 class UserController {
   async index(req, res) {
-    const loggedMongo = await UserSchema.finddOne({ id: req.userId });
+    const loggedMongo = await UserSchema.findOne({ id: req.userId });
     let usersMongo;
     if (loggedMongo.male_interest && loggedMongo.female_interest) {
       usersMongo = await UserSchema.find({
@@ -56,8 +57,10 @@ class UserController {
         .email(),
       sex: yup.string()
         .required(),
-      male_interest: yup.boolean(),
-      female_interest: yup.boolean(),
+      male_interest: yup.boolean()
+        .required(),
+      female_interest: yup.boolean()
+        .required(),
       password: yup.string()
         .required()
         .min(6),
@@ -87,12 +90,18 @@ class UserController {
       return res.status(401).json({ error: 'User already exists' });
     }
 
-    const { id, name, email } = await User.create(req.body);
+    const {
+      id, name, email, sex,
+    } = await User.create(req.body);
+
 
     await UserSchema.create({
       id,
       name,
       email,
+      sex,
+      male_interest,
+      female_interest,
     });
 
     return res.json({
@@ -154,16 +163,26 @@ class UserController {
       userMongo.bio = req.body.bio;
     }
 
-    console.log(userMongo);
     await userMongo.save();
 
-    const { id, name, email } = await user.update(req.body);
+    await user.update(req.body);
+
+    const {
+      id, name, email, avatar,
+    } = await User.findByPk(req.userId, {
+      include: [{
+        model: File,
+        as: 'avatar',
+        attributes: ['id', 'name', 'path'],
+      }],
+    });
 
 
     return res.json({
       id,
       name,
       email,
+      avatar,
     });
   }
 }
