@@ -11,14 +11,14 @@ module.exports = {
       type: Sequelize.STRING,
       allowNull: false,
     },
+    sex: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
     email: {
       type: Sequelize.STRING,
       allowNull: false,
       unique: true,
-    },
-    sex: {
-      type: Sequelize.STRING,
-      allowNull: false,
     },
     male_interest: {
       type: Sequelize.BOOLEAN,
