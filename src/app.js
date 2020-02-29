@@ -5,6 +5,7 @@ const express = require('express');
 const Sentry = require('@sentry/node');
 const Youch = require('youch');
 const path = require('path');
+const cors = require('cors');
 
 const routes = require('./routes');
 const sentryConfig = require('./config/sentry');
@@ -24,6 +25,7 @@ class App {
 
   middleware() {
     this.server.use(Sentry.Handlers.requestHandler());
+    this.server.use(cors());
     this.server.use(express.json());
     this.server.use(
       '/files',
