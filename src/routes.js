@@ -8,6 +8,7 @@ const UserController = require('./app/controllers/UserController');
 const LikeController = require('./app/controllers/LikeController');
 const DislikeController = require('./app/controllers/DislikeController');
 const SessionController = require('./app/controllers/SessionController');
+const NotificationController = require('./app/controllers/NotificationController');
 const FileController = require('./app/controllers/FileController');
 
 const app = new Router();
@@ -20,6 +21,9 @@ app.use(authMiddleware);
 
 app.get('/user', UserController.index);
 app.put('/user', UserController.update);
+
+app.get('/notification', NotificationController.index);
+app.put('/notification/:id', NotificationController.update);
 
 app.post('/user/:targetId/likes', LikeController.store);
 app.post('/user/:targetId/dislikes', DislikeController.store);

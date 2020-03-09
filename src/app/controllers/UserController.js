@@ -44,24 +44,21 @@ class UserController {
       });
     }
 
-
     return res.json(usersMongo);
   }
 
   async store(req, res) {
     const schema = yup.object().shape({
-      name: yup.string()
-        .required(),
-      email: yup.string()
+      name: yup.string().required(),
+      email: yup
+        .string()
         .required()
         .email(),
-      sex: yup.string()
-        .required(),
-      male_interest: yup.boolean()
-        .required(),
-      female_interest: yup.boolean()
-        .required(),
-      password: yup.string()
+      sex: yup.string().required(),
+      male_interest: yup.boolean().required(),
+      female_interest: yup.boolean().required(),
+      password: yup
+        .string()
         .required()
         .min(6),
     });
@@ -71,7 +68,9 @@ class UserController {
     }
 
     if (validate.checkEmail(req.body.email) <= 4) {
-      return res.status(401).json({ error: 'Access is available only for PUC studants' });
+      return res
+        .status(401)
+        .json({ error: 'Access is available only for PUC studants' });
     }
 
     const { male_interest, female_interest } = req.body;
@@ -93,7 +92,6 @@ class UserController {
     const {
       id, name, email, sex,
     } = await User.create(req.body);
-
 
     await UserSchema.create({
       id,
@@ -121,17 +119,14 @@ class UserController {
       bio: yup.string(),
       campus: yup.string(),
       phone: yup.string(),
-      oldPassword: yup.string()
-        .min(6),
-      password: yup.string()
+      oldPassword: yup.string().min(6),
+      password: yup
+        .string()
         .min(6)
-        .when('oldPassword', (oldPassword, field) => (
-          oldPassword ? field.required() : field)),
-      confirmPassword: yup.string()
-        .when('password', (password, field) => (
-          password ? field.required()
-            .oneOf([yup.ref('password')]) : field
-        )),
+        .when('oldPassword', (oldPassword, field) => (oldPassword ? field.required() : field)),
+      confirmPassword: yup
+        .string()
+        .when('password', (password, field) => (password ? field.required().oneOf([yup.ref('password')]) : field)),
     });
 
     if (!(await schema.isValid(req.body))) {
@@ -170,13 +165,14 @@ class UserController {
     const {
       id, name, email, avatar,
     } = await User.findByPk(req.userId, {
-      include: [{
-        model: File,
-        as: 'avatar',
-        attributes: ['id', 'name', 'path'],
-      }],
+      include: [
+        {
+          model: File,
+          as: 'avatar',
+          attributes: ['id', 'name', 'path'],
+        },
+      ],
     });
-
 
     return res.json({
       id,

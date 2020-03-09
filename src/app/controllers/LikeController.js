@@ -1,4 +1,5 @@
 const UserSchema = require('../schemas/UserSchema');
+const Notification = require('../schemas/NotificationSchema');
 
 class LikeController {
   async store(req, res) {
@@ -12,6 +13,15 @@ class LikeController {
     }
 
     if (targetUser.likes.includes(loggedUser._id)) {
+      Notification.create({
+        content: `Brotou! Deu bom p/ vc e ${targetUser.name}`,
+        user: req.userId,
+      });
+
+      Notification.create({
+        content: `Brotou! Deu bom p/ vc e ${loggedUser.name}`,
+        user: targetId,
+      });
       console.log('deu match');
     }
 
