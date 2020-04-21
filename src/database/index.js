@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize');
 const mongoose = require('mongoose');
+const redis = require('async-redis');
 
 const dbConfig = require('../config/database');
 const User = require('../app/models/User');
@@ -11,6 +12,7 @@ class Database {
   constructor() {
     this.init();
     this.mongo();
+    this.redis();
   }
 
   init() {
@@ -24,10 +26,18 @@ class Database {
     this.mongooseConnection = mongoose.connect(
       'mongodb://localhost:27017/my_gossip',
       {
+        useUnifiedTopology: true,
         useNewUrlParser: true,
         useFindAndModify: true,
       },
     );
+  }
+
+  redis() {
+    this.client = redis.createClient();
+    this.client.on('connect', () => {
+      console.log('redis connected');
+    });
   }
 }
 

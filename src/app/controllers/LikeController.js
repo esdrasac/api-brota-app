@@ -4,6 +4,7 @@ const Notification = require('../schemas/NotificationSchema');
 class LikeController {
   async store(req, res) {
     const { targetId } = req.params;
+    const { redis, io } = req;
 
     const loggedUser = await UserSchema.findOne({ id: req.userId });
     const targetUser = await UserSchema.findOne({ id: targetId });
@@ -13,6 +14,9 @@ class LikeController {
     }
 
     if (targetUser.likes.includes(loggedUser._id)) {
+      const loggedSocket = await redis.get(req.userId);
+      const targetSocket = await redis.get(targetId);
+
       Notification.create({
         content: `Brotou! Deu bom p/ vc e ${targetUser.name}`,
         user: req.userId,
@@ -22,7 +26,14 @@ class LikeController {
         content: `Brotou! Deu bom p/ vc e ${loggedUser.name}`,
         user: targetId,
       });
-      console.log('deu match');
+
+      if (loggedSocket) {
+        io.to(loggedSocket).emit('match', targetUser);
+      }
+
+      if (targetSocket) {
+        io.to(targetSocket).emit('match', loggedUser);
+      }
     }
 
     loggedUser.likes.push(targetUser._id);

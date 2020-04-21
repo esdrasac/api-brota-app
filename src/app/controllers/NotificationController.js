@@ -23,7 +23,7 @@ class NotificationController {
       { new: true },
     );
 
-    return res.json(Notification);
+    return res.json(notification);
   }
 }
 

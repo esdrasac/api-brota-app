@@ -17,8 +17,6 @@ class UserController {
           { _id: { $nin: loggedMongo.dislikes } },
         ],
       });
-
-      return res.json(usersMongo);
     }
 
     if (loggedMongo.male_interest && !loggedMongo.female_interest) {
@@ -30,7 +28,6 @@ class UserController {
           { sex: 'M' },
         ],
       });
-      return res.json(usersMongo);
     }
 
     if (loggedMongo.female_interest && !loggedMongo.male_interest) {
@@ -43,6 +40,12 @@ class UserController {
         ],
       });
     }
+
+    usersMongo.map((each) => {
+      if (each.avatar_id.path) {
+        each.avatar_id.path = `${process.env.BASE_FILE_URL}${each.avatar_id.path}`;
+      }
+    });
 
     return res.json(usersMongo);
   }
@@ -163,13 +166,13 @@ class UserController {
     await user.update(req.body);
 
     const {
-      id, name, email, avatar,
+      id, name, email, avatar, birthday, sex, male_interest, female_interest, bio, campus, phone,
     } = await User.findByPk(req.userId, {
       include: [
         {
           model: File,
           as: 'avatar',
-          attributes: ['id', 'name', 'path'],
+          attributes: ['id', 'path', 'url'],
         },
       ],
     });
@@ -179,6 +182,13 @@ class UserController {
       name,
       email,
       avatar,
+      birthday,
+      sex,
+      male_interest,
+      female_interest,
+      bio,
+      campus,
+      phone,
     });
   }
 }

@@ -11,24 +11,24 @@ const SessionController = require('./app/controllers/SessionController');
 const NotificationController = require('./app/controllers/NotificationController');
 const FileController = require('./app/controllers/FileController');
 
-const app = new Router();
+const route = new Router();
 const upload = multer(multerConfig);
 
-app.post('/user', UserController.store);
-app.post('/session', SessionController.store);
+route.post('/user', UserController.store);
+route.post('/session', SessionController.store);
 
-app.use(authMiddleware);
+route.use(authMiddleware);
 
-app.get('/user', UserController.index);
-app.put('/user', UserController.update);
+route.get('/user', UserController.index);
+route.put('/user', UserController.update);
 
-app.get('/notification', NotificationController.index);
-app.put('/notification/:id', NotificationController.update);
+route.get('/notifications', NotificationController.index);
+route.put('/notifications/:id', NotificationController.update);
 
-app.post('/user/:targetId/likes', LikeController.store);
-app.post('/user/:targetId/dislikes', DislikeController.store);
+route.post('/user/:targetId/likes', LikeController.store);
+route.post('/user/:targetId/dislikes', DislikeController.store);
 
-app.post('/files', upload.single('file'), FileController.store);
+route.post('/files', upload.single('file'), FileController.store);
 
 
-module.exports = app;
+module.exports = route;

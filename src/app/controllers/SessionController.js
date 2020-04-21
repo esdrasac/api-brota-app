@@ -8,10 +8,12 @@ const authConfig = require('../../config/auth');
 class SessionController {
   async store(req, res) {
     const schema = yup.object().shape({
-      email: yup.string()
+      email: yup
+        .string()
         .required()
         .email(),
-      password: yup.string()
+      password: yup
+        .string()
         .required()
         .min(6),
     });
@@ -24,11 +26,13 @@ class SessionController {
 
     const user = await User.findOne({
       where: { email },
-      include: [{
-        model: File,
-        as: 'avatar',
-        attributes: ['id', 'path', 'url'],
-      }],
+      include: [
+        {
+          model: File,
+          as: 'avatar',
+          attributes: ['id', 'path', 'url'],
+        },
+      ],
     });
 
     if (!user) {
@@ -39,7 +43,9 @@ class SessionController {
       return res.status(401).json({ error: 'Password does not match' });
     }
 
-    const { id, name, avatar } = user;
+    const {
+      id, name, avatar, birthday, sex, male_interest, female_interest, bio, campus, phone,
+    } = user;
 
     return res.json({
       user: {
@@ -47,6 +53,13 @@ class SessionController {
         name,
         email,
         avatar,
+        birthday,
+        sex,
+        male_interest,
+        female_interest,
+        bio,
+        campus,
+        phone,
       },
       token: jwt.sign({ id }, authConfig.secret, {
         expiresIn: authConfig.expiresIn,
