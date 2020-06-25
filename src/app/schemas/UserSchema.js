@@ -39,16 +39,28 @@ const UserSchema = new mongoose.Schema({
       default: null,
     },
   },
+  likesQnt: {
+    type: Number,
+    default: null,
+  },
+  dilikesQnt: {
+    type: Number,
+    default: null,
+  },
+  matchQnt: {
+    type: Number,
+    default: null,
+  },
   likes: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Users',
+    ref: 'users',
   }],
   dislikes: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Users',
+    ref: 'users',
   }],
 }, {
   timestamps: true,
 });
 
-module.exports = mongoose.model('Users', UserSchema);
+module.exports = mongoose.model('users', UserSchema);

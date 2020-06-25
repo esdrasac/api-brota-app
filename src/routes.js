@@ -10,6 +10,7 @@ const DislikeController = require('./app/controllers/DislikeController');
 const SessionController = require('./app/controllers/SessionController');
 const NotificationController = require('./app/controllers/NotificationController');
 const FileController = require('./app/controllers/FileController');
+const FeedController = require('./app/controllers/FeedController');
 
 const route = new Router();
 const upload = multer(multerConfig);
@@ -21,6 +22,12 @@ route.use(authMiddleware);
 
 route.get('/user', UserController.index);
 route.put('/user', UserController.update);
+
+route.get('/feed', FeedController.index);
+route.get('/feed/get-by-id', FeedController.indexById);
+route.post('/feed/post', FeedController.store);
+route.post('/feed/:postId/like', FeedController.like);
+route.post('/feed/:id/coment', FeedController.setComent);
 
 route.get('/notifications', NotificationController.index);
 route.put('/notifications/:id', NotificationController.update);

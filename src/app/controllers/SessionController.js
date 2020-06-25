@@ -3,6 +3,8 @@ const jwt = require('jsonwebtoken');
 
 const User = require('../models/User');
 const File = require('../models/File');
+
+const UserSchema = require('../schemas/UserSchema');
 const authConfig = require('../../config/auth');
 
 class SessionController {
@@ -47,9 +49,15 @@ class SessionController {
       id, name, avatar, birthday, sex, male_interest, female_interest, bio, campus, phone,
     } = user;
 
+    const loggedMongo = await UserSchema.findOne({ id });
+    const { _id, likesQnt, matchQnt } = loggedMongo;
+
     return res.json({
       user: {
         id,
+        _id,
+        likesQnt,
+        matchQnt,
         name,
         email,
         avatar,

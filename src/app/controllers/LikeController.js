@@ -14,6 +14,8 @@ class LikeController {
     }
 
     if (targetUser.likes.includes(loggedUser._id)) {
+      targetUser.matchQnt += 1;
+      loggedUser.matchQnt += 1;
       const loggedSocket = await redis.get(req.userId);
       const targetSocket = await redis.get(targetId);
 
@@ -37,6 +39,8 @@ class LikeController {
     }
 
     loggedUser.likes.push(targetUser._id);
+    targetUser.likesQnt += 1;
+    await targetUser.save();
     await loggedUser.save();
 
     return res.json(loggedUser);
